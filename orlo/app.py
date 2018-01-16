@@ -5,8 +5,7 @@ import logging
 import gunicorn.app.base
 from gunicorn.six import iteritems
 
-from logging import Formatter
-from logging.handlers import RotatingFileHandler
+from logging import Formatter, StreamHandler
 
 from flask import Flask
 from flask_alembic import Alembic
@@ -22,7 +21,7 @@ app = Flask(__name__)
 alembic = Alembic()
 alembic.init_app(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = config.get('db', 'uri')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', config.get('db', 'uri'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 if not app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
@@ -65,19 +64,11 @@ if not app.debug:
     for h in app.logger.handlers:
         h.setFormatter(formatter)
 
-    log_dir = config.get('logging', 'directory')
-    logfile = os.path.join(log_dir, 'orlo.log')
-    if log_dir != 'disabled':
-        file_handler = RotatingFileHandler(
-            logfile,
-            maxBytes=1048576,
-            backupCount=1,
-        )
+    file_handler = StreamHandler()
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.DEBUG)
 
-        file_handler.setFormatter(formatter)
-        file_handler.setLevel(logging.DEBUG)
-
-        app.logger.addHandler(file_handler)
+    app.logger.addHandler(file_handler)
 
 
 class OrloApplication(gunicorn.app.base.BaseApplication):

@@ -1,5 +1,7 @@
-FROM python:3
+FROM python:2
 
-RUN python setup.py install
+WORKDIR /app
+COPY . /app
+RUN /app/docker-build.sh
 
 CMD orlo

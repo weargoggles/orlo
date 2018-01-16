@@ -113,7 +113,7 @@ experience crashes. ***")
 
 def check_database():
     app.logger.info('Checking database "{}"'.format(
-        config.get('db', 'uri')
+        app.config['SQLALCHEMY_DATABASE_URI'],
     ))
 
     try:

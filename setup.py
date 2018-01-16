@@ -28,7 +28,7 @@ install_requires = [
     'gunicorn',
     'orloclient>=0.4.5',
     'psycopg2',
-    'pyldap',
+    'python-ldap',
     'pytz',
     'sqlalchemy-utils',
 ]
